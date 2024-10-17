@@ -1,7 +1,7 @@
 # Introdução
 Este documento tem como objetivo apresentar a arquitetura, funcionalidades e o fluxo de trabalho da plataforma de agendamento e acompanhamento online desenvolvida para o Outubro Rosa. A plataforma visa simplificar o processo de agendamento de consultas e o acompanhamento dos resultados de exames para mulheres, contribuindo para a prevenção e detecção precoce do câncer de mama e outros exames.
 
-![Imagem tela inicial sistema](/docs/home.png)
+![Imagem tela inicial sistema](https://github.com/JoaoIto/elaSaude/blob/developming/public/docs/home.png)
 # Visão Geral
 A plataforma é um sistema web que permite às usuárias:
 
