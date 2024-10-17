@@ -8,7 +8,7 @@ import { tokenService } from '@/app/functions/token/token';
 
 // Validação com Zod
 const loginSchema = z.object({
-  cpf: z.string().length(11, 'O CPF deve ter 11 dígitos'), // Atualizado para length
+  email: z.string(), // Atualizado para length
   password: z.string().min(1, 'A senha deve ter no mínimo 1 caracteres'),
 });
 
@@ -27,8 +27,8 @@ export default function LoginPage() {
     console.log('Login Form Data:', data);
 
     try {
-      const response = await fetch('http://localhost:3000/users', {
-        method: 'GET',
+      const response = await fetch('http://54.197.216.63:82/api', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json', // Define o tipo de conteúdo como JSON
         },
@@ -65,13 +65,13 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
           <TextField
             fullWidth
-            label="CPF"
+            label="Email"
             variant="outlined"
-            placeholder='CPF: 12345678901'
-            value={"12345678901"}
-            {...register('cpf')}
-            error={!!errors.cpf}
-            helperText={errors.cpf ? errors.cpf.message : ''}
+            placeholder='Email: joao@example.com'
+            value={"joao@example.com"}
+            {...register('email')}
+            error={!!errors.email}
+            helperText={errors.email ? errors.email.message : ''}
             InputProps={{ style: { backgroundColor: '#ECECEC' } }}
           />
           <TextField
@@ -79,7 +79,7 @@ export default function LoginPage() {
             label="Senha"
             type="password"
             placeholder='Senha: *********'
-            value={"senha123"}
+            value={"minhaSenhaForte"}
             variant="outlined"
             {...register('password')}
             error={!!errors.password}

@@ -30,7 +30,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       lang="en"
     >
-      <body className="w-screen h-screen bg-lightGray">
+      <body className="w-screen h-full bg-lightGray">
         {isPublicPage && (
           <>
             <NavbarDrawer />
