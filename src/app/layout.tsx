@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import "./globals.css";
 import localFont from "next/font/local";
 import { usePathname } from "next/navigation";
@@ -21,25 +21,29 @@ export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>)
-
-{
-const pathname = usePathname();
-const isPublicPage = checkPublicRoute(pathname);
+}>) {
+  const pathname = usePathname();
+  const isPublicPage = checkPublicRoute(pathname);
 
   return (
-    <html className={`${geistSans.variable} ${geistMono.variable} antialiased`} lang="en">
-    <body
-      className="w-screen h-screen bg-lightGray"
+    <html
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      lang="en"
     >
-      {isPublicPage && children}
-      {!isPublicPage && (
+      <body className="w-screen h-screen bg-lightGray">
+        {isPublicPage && (
+          <>
+            <NavbarDrawer />
+            {children}
+          </>
+        )}
+        {!isPublicPage && (
           <PrivateRoute>
             <NavbarDrawer />
-              {children}
+            {children}
           </PrivateRoute>
-      )}
+        )}
       </body>
-      </html>
+    </html>
   );
 }
