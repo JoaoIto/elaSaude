@@ -4,6 +4,8 @@ export const APP_ROUTES = {
   },
   public: {
     MeusExames: "/meusExames",
+    medicoExames: "/medico/exames-pacientes",
+    laboratorioExames: "/laboratorio/exames-pacientes/0354",
     naHora: "/naHora",
     login: "/auth/login",
     cadastro: "/auth/cadastro",
