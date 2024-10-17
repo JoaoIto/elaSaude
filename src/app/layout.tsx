@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
+"use client"
 import "./globals.css";
+import localFont from "next/font/local";
+import { usePathname } from "next/navigation";
+import { checkPublicRoute } from "./functions/routes/checkPublicRoute";
+import PrivateRoute from "./routes";
 import { NavbarDrawer } from "./components/navbar";
 
 const geistSans = localFont({
@@ -14,24 +17,29 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "elaSaude",
-  description: "App de cuidados para a mulher",
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>)
+
+{
+const pathname = usePathname();
+const isPublicPage = checkPublicRoute(pathname);
+
   return (
     <html className={`${geistSans.variable} ${geistMono.variable} antialiased`} lang="en">
-      <body
-        className="w-screen h-screen bg-lightGray"
-      >
-        <NavbarDrawer />
-        {children}
+    <body
+      className="w-screen h-screen bg-lightGray"
+    >
+      {isPublicPage && children}
+      {!isPublicPage && (
+          <PrivateRoute>
+            <NavbarDrawer />
+              {children}
+          </PrivateRoute>
+      )}
       </body>
-    </html>
+      </html>
   );
 }

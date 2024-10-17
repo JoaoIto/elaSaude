@@ -16,9 +16,12 @@
     "@mui/material": "^6.1.4",
     "ela-saude": "file:",
     "json-server": "^1.0.0-beta.3",
+    "lucide-react": "^0.453.0",
     "next": "14.2.15",
+    "nookies": "^2.5.2",
     "react": "^18",
     "react-dom": "^18",
+    "react-material-ui-carousel": "^3.4.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {

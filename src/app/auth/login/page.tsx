@@ -1,13 +1,14 @@
-'use client'
+'use client';
 
 import { useForm } from 'react-hook-form';
-import {zodResolver} from "@hookform/resolvers/zod";
-import {z} from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { tokenService } from '@/app/functions/token/token';
 
 // Validação com Zod
 const loginSchema = z.object({
-  cpf: z.string().min(11, 'O CPF deve ter no mínimo 11 dígitos').max(14, 'CPF inválido'),
+  cpf: z.string().length(11, 'O CPF deve ter 11 dígitos'), // Atualizado para length
   password: z.string().min(1, 'A senha deve ter no mínimo 1 caracteres'),
 });
 
@@ -18,14 +19,38 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormInputs>(
-    {
-      resolver: zodResolver(loginSchema),
-    }
-  );
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const onSubmit = (data: LoginFormInputs) => {
+  const onSubmit = async (data: LoginFormInputs) => {
     console.log('Login Form Data:', data);
+
+    try {
+      const response = await fetch('http://localhost:3000/users', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json', // Define o tipo de conteúdo como JSON
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao fazer login');
+      }
+
+      const responseData = await response.json();
+      
+      if (responseData.length > 0) {
+        // Supondo que o token esteja no primeiro usuário retornado
+        const user = responseData[0]; // Pega o primeiro usuário
+        tokenService.save(user.token);
+        console.log('Token salvo:', user.token);
+      } else {
+        throw new Error('Usuário não encontrado');
+      }
+    } catch (error) {
+      console.error('Erro:', error);
+    }
   };
 
   return (
@@ -43,6 +68,7 @@ export default function LoginPage() {
             label="CPF"
             variant="outlined"
             placeholder='CPF: 12345678901'
+            value={"12345678901"}
             {...register('cpf')}
             error={!!errors.cpf}
             helperText={errors.cpf ? errors.cpf.message : ''}
@@ -53,6 +79,7 @@ export default function LoginPage() {
             label="Senha"
             type="password"
             placeholder='Senha: *********'
+            value={"senha123"}
             variant="outlined"
             {...register('password')}
             error={!!errors.password}
