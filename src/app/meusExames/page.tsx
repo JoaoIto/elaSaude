@@ -81,9 +81,8 @@ export default function MeusExames() {
                     </Typography>
                     <Button
                       variant="contained"
-                      color="primary"
                       href={`/editar-exame/${exam.cartaoSus}`} // Link para a página de edição
-                      className="mt-2"
+                      className="mt-2 bg-mediumPink"
                     >
                       Editar
                     </Button>
