@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { TextField, Button, Grid, Typography } from "@mui/material";
+import { TextField, Button, Grid, Typography, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import { z } from "zod";
 
 export default function SolicitacaoCheckupGeral() {
@@ -13,12 +13,15 @@ export default function SolicitacaoCheckupGeral() {
     cartaoSus: "123456789",
     endereco: "Rua das Flores, 123, Apto 4B",
     cidDiagnostico: "Z12.31",
-    nomeExame: "Checkup Geral", // Alterado para "Checkup Geral"
+    nomeExame: "Checkup Geral",
     motivoConsulta: "Exame de rotina",
+    tipoConsulta: "consulta", // Novo campo para tipo de consulta
+    documentoExame: null, // Novo campo para o documento de exame
   });
 
   // Estado para erros de validação
   const [formErrors, setFormErrors] = useState<any>({});
+  const [codigoFonte, setCodigoFonte] = useState<any>(null); // Para o campo de arquivo
 
   // Definindo o schema de validação com Zod
   const solicitacaoSchema = z.object({
@@ -31,6 +34,8 @@ export default function SolicitacaoCheckupGeral() {
     cidDiagnostico: z.string().min(1, "O diagnóstico CID-10 é obrigatório."),
     nomeExame: z.string().min(1, "O nome do exame deve vir obrigatório!"),
     motivoConsulta: z.string().min(1, "O motivo da consulta é obrigatório."),
+    tipoConsulta: z.enum(["consulta", "retorno"]).optional(), // Novo campo para tipo de consulta
+    documentoExame: z.instanceof(File).optional(), // Novo campo para o documento de exame
   });
 
   // Função de submissão do formulário
@@ -53,7 +58,7 @@ export default function SolicitacaoCheckupGeral() {
       setFormErrors({});
       
       // Enviar dados do formulário para a API
-      fetch("http://localhost:3001/checkupGeral", { // Alterado para checkupGeral
+      fetch("http://localhost:3001/checkupGeral", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +73,6 @@ export default function SolicitacaoCheckupGeral() {
         })
         .then((data) => {
           console.log("Resposta da API:", data);
-          // Aqui você pode adicionar lógica para lidar com a resposta da API, se necessário
         })
         .catch((error) => {
           console.error("Erro ao enviar dados:", error);
@@ -79,6 +83,19 @@ export default function SolicitacaoCheckupGeral() {
   // Função para lidar com mudanças nos campos do formulário
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  // Função para lidar com mudanças no tipo de consulta
+  const handleTipoConsultaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValues({ ...formValues, tipoConsulta: e.target.value });
+  };
+
+  // Função para lidar com mudanças no arquivo
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormValues({ ...formValues, documentoExame: e.target.files[0] });
+      setCodigoFonte(e.target.files[0]);
+    }
   };
 
   return (
@@ -197,7 +214,7 @@ export default function SolicitacaoCheckupGeral() {
               type="text"
               fullWidth
               variant="outlined"
-              defaultValue="Checkup Geral" // Alterado para "Checkup Geral"
+              defaultValue="Checkup Geral"
               disabled
               className="mb-4"
             />
@@ -226,8 +243,6 @@ export default function SolicitacaoCheckupGeral() {
               onChange={handleChange}
               error={!!formErrors.motivoConsulta}
               helperText={formErrors.motivoConsulta}
-              multiline
-              rows={5}
               fullWidth
               variant="outlined"
               placeholder="Ex: Exame de rotina"
@@ -235,17 +250,71 @@ export default function SolicitacaoCheckupGeral() {
             />
           </Grid>
 
-          {/* Botão de Envio */}
-          <div className="flex justify-end">
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              className="bg-mediumPink hover:[#CF8C95] text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          <Grid>
+            {/* Tipo de Consulta */}
+            <Typography className="text-black py-4 text-xl">
+              Tipo de Consulta:
+            </Typography>
+            <RadioGroup
+              name="tipoConsulta"
+              value={formValues.tipoConsulta}
+              onChange={handleTipoConsultaChange}
             >
-              Enviar Solicitação
-            </Button>
-          </div>
+              <FormControlLabel className="text-black" value="consulta" control={<Radio />} label="Consulta" />
+              <FormControlLabel className="text-black" value="retorno" control={<Radio />} label="Retorno" />
+            </RadioGroup>
+          </Grid>
+
+          {formValues.tipoConsulta === "retorno" && (
+  <Grid>
+    {/* Campo para anexar o documento do exame */}
+    <Typography className="text-black py-4 text-xl">
+      Anexar Documento do Exame:
+    </Typography>
+    
+    <div className="flex items-center gap-4">
+      <label htmlFor="upload-button">
+        <Button
+          variant="contained"
+          component="span"
+          color="primary"
+          className="flex self-end bg-mediumPink"
+        >
+          Selecionar Arquivo
+        </Button>
+      </label>
+      <input
+        id="upload-button"
+        type="file"
+        onChange={handleFileChange}
+        accept=".pdf, .doc, .docx"
+        className="hidden"
+      />
+      {codigoFonte && (
+        <Typography className="text-gray-700">
+          {codigoFonte.name}
+        </Typography>
+      )}
+    </div>
+
+    {formErrors.documentoExame && (
+      <p className="text-red-500">{formErrors.documentoExame}</p>
+    )}
+  </Grid>
+)}
+
+
+          {/* Botão de Submissão */}
+          <Grid className="w-full flex justify-end">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            className="mt-4 flex self-end bg-mediumPink"
+          >
+            Solicitar Exame
+          </Button>
+          </Grid>
         </form>
       </div>
     </div>
